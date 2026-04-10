@@ -1,5 +1,9 @@
 // Background service worker for Glass AI Note Taker
 
+chrome.action.onClicked.addListener(() => {
+  chrome.tabs.create({ url: "index.html" });
+});
+
 chrome.commands.onCommand.addListener((command) => {
   if (command === "store-link") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

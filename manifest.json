@@ -3,9 +3,9 @@
   "name": "Glass AI Note Taker",
   "version": "1.0.0",
   "description": "A premium AI-powered note taker with Glass IDE aesthetics and LaTeX support.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "action": {
-    "default_popup": "index.html"
+    "default_title": "Open Glass AI Note Taker"
   },
   "options_page": "options.html",
   "background": {
