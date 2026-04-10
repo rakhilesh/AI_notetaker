@@ -91,9 +91,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   noteEditor.addEventListener('input', updatePreview);
 
-  // --- Storage Management ---
+  // --- Storage Management (with Demo Fallback) ---
+  const storage = window.chrome && chrome.storage && chrome.storage.local ? chrome.storage.local : {
+    get: (keys, cb) => {
+      const result = {};
+      keys.forEach(k => result[k] = JSON.parse(localStorage.getItem(k)));
+      cb(result);
+    },
+    set: (obj, cb) => {
+      Object.keys(obj).forEach(k => localStorage.setItem(k, JSON.stringify(obj[k])));
+      if (cb) cb();
+    },
+    remove: (key, cb) => {
+      localStorage.removeItem(key);
+      if (cb) cb();
+    }
+  };
+
   const loadAppState = () => {
-    chrome.storage.local.get(['all_notes', 'all_folders', 'latest_note'], (result) => {
+    storage.get(['all_notes', 'all_folders', 'latest_note'], (result) => {
       allNotes = result.all_notes || [];
       allFolders = result.all_folders || [{ id: 'general', name: 'General' }];
       
@@ -122,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const saveState = () => {
-    chrome.storage.local.set({ 
+    storage.set({ 
       all_notes: allNotes, 
       all_folders: allFolders 
     });
@@ -175,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = noteEditor.value;
     if (!content) return;
 
-    chrome.storage.local.get(['openai_api_key'], async (result) => {
+    storage.get(['openai_api_key'], async (result) => {
       const apiKey = result.openai_api_key;
       if (!apiKey) {
         alert('Please set your OpenAI API Key in Settings.');
@@ -276,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const note = noteEditor.value;
     if (!note) return;
 
-    chrome.storage.local.get(['openai_api_key'], async (result) => {
+    storage.get(['openai_api_key'], async (result) => {
       const apiKey = result.openai_api_key;
       if (!apiKey) {
         alert('Please set your OpenAI API Key in Settings.');
@@ -327,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Links ---
   const loadLinks = () => {
-    chrome.storage.local.get(['stored_links'], (result) => {
+    storage.get(['stored_links'], (result) => {
       const links = result.stored_links || [];
       linkList.innerHTML = '';
       if (links.length === 0) {
@@ -347,13 +363,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- Settings ---
-  chrome.storage.local.get(['openai_api_key'], (result) => {
+  storage.get(['openai_api_key'], (result) => {
     if (result.openai_api_key) apiKeyInput.value = result.openai_api_key;
   });
 
   saveSettingsBtn.addEventListener('click', () => {
     const key = apiKeyInput.value.trim();
-    chrome.storage.local.set({ 'openai_api_key': key }, () => {
+    storage.set({ 'openai_api_key': key }, () => {
       alert('Settings saved!');
     });
   });
