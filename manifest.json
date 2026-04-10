@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Glass AI Note Taker",
+  "version": "1.0.0",
+  "description": "A premium AI-powered note taker with Glass IDE aesthetics and LaTeX support.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "commands": {
+    "store-link": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Store current page link as a note."
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}

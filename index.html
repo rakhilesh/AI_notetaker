@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glass AI Note Taker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="lib/katex/katex.min.css">
+  <script defer src="lib/katex/katex.min.js"></script>
+  <script defer src="lib/lucide.min.js"></script>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="nav-icon active" id="nav-home" title="Notes">
+       <i data-lucide="file-text"></i>
+    </div>
+    <div class="nav-icon" id="nav-templates" title="AI Templates">
+       <i data-lucide="layout"></i>
+    </div>
+    <div class="nav-icon" id="nav-links" title="Link Archive">
+       <i data-lucide="link"></i>
+    </div>
+    <div class="nav-icon" id="nav-ai" title="AI Assistant">
+       <i data-lucide="sparkles"></i>
+    </div>
+    <div class="nav-icon" id="nav-settings" title="Settings">
+       <i data-lucide="settings"></i>
+    </div>
+    <div class="nav-icon" id="nav-help" title="Help">
+       <i data-lucide="help-circle"></i>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div id="view-home" class="view">
+      <h1>My Notes</h1>
+      <div class="editor-container">
+        <textarea id="note-editor" class="glass-input" placeholder="Start typing... Use $...$ for LaTeX" rows="12"></textarea>
+      </div>
+      <div class="latex-preview glass-panel" id="latex-preview">
+        Preview area...
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button id="save-note" class="glass-button">Save Note</button>
+        <button id="summarize-note" class="glass-button" style="background: hsla(260, 85%, 68%, 0.2); border: 1px solid var(--accent-color);">AI Summarize</button>
+      </div>
+    </div>
+
+    <!-- Views for other sections will be hidden by default -->
+    <div id="view-templates" class="view" style="display: none;">
+      <h1>AI Project Templates</h1>
+      <div id="template-list" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Templates injected here -->
+      </div>
+    </div>
+
+    <div id="view-links" class="view" style="display: none;">
+      <h1>Stored Links</h1>
+      <div id="link-list" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Links injected here -->
+      </div>
+    </div>
+
+    <div id="view-settings" class="view" style="display: none;">
+      <h1>Settings</h1>
+      <div class="glass-panel" style="padding: 15px;">
+        <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary);">OpenAI API Key</label>
+        <input type="password" id="api-key-input" class="glass-input" placeholder="sk-...">
+        <button id="save-settings" class="glass-button" style="margin-top: 15px; width: 100%;">Save Settings</button>
+      </div>
+    </div>
+
+    <div id="view-help" class="view" style="display: none;">
+      <h1>Help & Shortcuts</h1>
+      <div class="glass-panel" style="padding: 15px; font-size: 14px; line-height: 1.6;">
+        <p><strong>Shortcuts:</strong></p>
+        <ul style="margin-left: 20px; margin-bottom: 15px;">
+          <li><kbd>Cmd/Ctrl + Shift + L</kbd>: Store current tab link</li>
+        </ul>
+        <p><strong>LaTeX:</strong></p>
+        <p>Use <code>$ E=mc^2 $</code> for inline and <code>$$ ... $$</code> for blocks.</p>
+        <p><strong>AI Templates:</strong></p>
+        <p>Select specialized templates for AI research and design docs.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
