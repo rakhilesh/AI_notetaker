@@ -1,7 +1,14 @@
 // Background service worker for Glass AI Note Taker
 
-chrome.action.onClicked.addListener(() => {
-  chrome.tabs.create({ url: "index.html" });
+chrome.action.onClicked.addListener((tab) => {
+  console.log("Extension icon clicked. Opening index.html...");
+  chrome.tabs.create({ url: chrome.runtime.getURL("index.html") }, (newTab) => {
+    if (chrome.runtime.lastError) {
+      console.error("Error opening tab:", chrome.runtime.lastError);
+    } else {
+      console.log("Tab opened successfully:", newTab.id);
+    }
+  });
 });
 
 chrome.commands.onCommand.addListener((command) => {

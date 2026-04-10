@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- UI Elements ---
   const navIcons = document.querySelectorAll('.nav-icon');
   const views = document.querySelectorAll('.view');
+  
+  // Elements that might be page-specific
   const noteTitle = document.getElementById('note-title');
   const noteFolderSelect = document.getElementById('note-folder');
   const noteTags = document.getElementById('note-tags');
