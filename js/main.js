@@ -7,7 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- UI Elements ---
   const navIcons = document.querySelectorAll('.nav-icon');
   const views = document.querySelectorAll('.view');
+  const noteTitle = document.getElementById('note-title');
+  const noteFolderSelect = document.getElementById('note-folder');
+  const noteTags = document.getElementById('note-tags');
   const noteEditor = document.getElementById('note-editor');
+  const aiTagBtn = document.getElementById('ai-tag-btn');
   const latexPreview = document.getElementById('latex-preview');
   const saveNoteBtn = document.getElementById('save-note');
   const summarizeBtn = document.getElementById('summarize-note');
@@ -15,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveSettingsBtn = document.getElementById('save-settings');
   const linkList = document.getElementById('link-list');
   const templateList = document.getElementById('template-list');
+  const libraryContent = document.getElementById('library-content');
+  const newFolderBtn = document.getElementById('new-folder-btn');
 
   // --- Constants ---
   const TEMPLATES = [
@@ -56,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Special handling for views
       if (targetViewId === 'view-links') loadLinks();
       if (targetViewId === 'view-templates') loadTemplates();
+      if (targetViewId === 'view-library') renderLibrary();
     });
   });
 
@@ -83,21 +90,173 @@ document.addEventListener('DOMContentLoaded', () => {
   noteEditor.addEventListener('input', updatePreview);
 
   // --- Storage Management ---
-  const loadNote = () => {
-    chrome.storage.local.get([currentNoteId], (result) => {
-      if (result[currentNoteId]) {
-        noteEditor.value = result[currentNoteId];
-        updatePreview();
+  const loadAppState = () => {
+    chrome.storage.local.get(['all_notes', 'all_folders', 'latest_note'], (result) => {
+      allNotes = result.all_notes || [];
+      allFolders = result.all_folders || [{ id: 'general', name: 'General' }];
+      
+      // Migration from single note
+      if (result.latest_note && allNotes.length === 0) {
+        const migratedNote = {
+          id: Date.now().toString(),
+          title: 'Imported Note',
+          content: result.latest_note,
+          folderId: 'general',
+          tags: [],
+          timestamp: Date.now()
+        };
+        allNotes.push(migratedNote);
+        chrome.storage.local.remove('latest_note');
+        saveState();
+      }
+
+      updateFolderDropdown();
+      renderLibrary();
+      
+      if (allNotes.length > 0) {
+        loadNote(allNotes[0].id);
       }
     });
   };
 
-  saveNoteBtn.addEventListener('click', () => {
-    const note = noteEditor.value;
-    chrome.storage.local.set({ [currentNoteId]: note }, () => {
-      saveNoteBtn.textContent = 'Saved!';
-      setTimeout(() => saveNoteBtn.textContent = 'Save Note', 2000);
+  const saveState = () => {
+    chrome.storage.local.set({ 
+      all_notes: allNotes, 
+      all_folders: allFolders 
     });
+  };
+
+  const updateFolderDropdown = () => {
+    noteFolderSelect.innerHTML = allFolders.map(f => 
+      `<option value="${f.id}">${f.name}</option>`
+    ).join('');
+  };
+
+  const loadNote = (id) => {
+    const note = allNotes.find(n => n.id === id);
+    if (note) {
+      currentNoteId = note.id;
+      noteTitle.value = note.title || '';
+      noteEditor.value = note.content || '';
+      noteFolderSelect.value = note.folderId || 'general';
+      noteTags.value = (note.tags || []).join(', ');
+      updatePreview();
+    }
+  };
+
+  saveNoteBtn.addEventListener('click', () => {
+    const noteData = {
+      id: currentNoteId || Date.now().toString(),
+      title: noteTitle.value || 'Untitled',
+      content: noteEditor.value,
+      folderId: noteFolderSelect.value,
+      tags: noteTags.value.split(',').map(t => t.trim()).filter(t => t),
+      timestamp: Date.now()
+    };
+
+    const index = allNotes.findIndex(n => n.id === noteData.id);
+    if (index > -1) {
+      allNotes[index] = noteData;
+    } else {
+      allNotes.push(noteData);
+      currentNoteId = noteData.id;
+    }
+
+    saveState();
+    saveNoteBtn.textContent = 'Saved!';
+    setTimeout(() => saveNoteBtn.textContent = 'Save Note', 2000);
+    renderLibrary();
+  });
+
+  // --- AI Tag Generation ---
+  aiTagBtn.addEventListener('click', async () => {
+    const content = noteEditor.value;
+    if (!content) return;
+
+    chrome.storage.local.get(['openai_api_key'], async (result) => {
+      const apiKey = result.openai_api_key;
+      if (!apiKey) {
+        alert('Please set your OpenAI API Key in Settings.');
+        return;
+      }
+
+      aiTagBtn.textContent = 'Generating...';
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: `Generate 3-5 concise one-word tags for this note content. Return ONLY the tags separated by commas:\n\n${content}` }]
+          })
+        });
+        const data = await response.json();
+        const tags = data.choices[0].message.content;
+        noteTags.value = tags;
+      } catch (error) {
+        console.error(error);
+        alert('Error generating tags.');
+      }
+      aiTagBtn.textContent = '✨ AI Tags';
+    });
+  });
+
+  // --- Library Management ---
+  const renderLibrary = () => {
+    libraryContent.innerHTML = '';
+    
+    allFolders.forEach(folder => {
+      const folderDiv = document.createElement('div');
+      folderDiv.innerHTML = `<div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-color); display: flex; align-items: center; gap: 5px;">
+        <i data-lucide="folder" style="width: 14px;"></i> ${folder.name}
+      </div>`;
+      
+      const noteContainer = document.createElement('div');
+      noteContainer.style.marginLeft = '15px';
+      noteContainer.style.marginBottom = '15px';
+      
+      const folderNotes = allNotes.filter(n => n.folderId === folder.id);
+      if (folderNotes.length === 0) {
+        noteContainer.innerHTML = '<div style="font-size: 11px; color: var(--text-secondary);">Empty</div>';
+      }
+      
+      folderNotes.forEach(note => {
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'glass-panel';
+        noteDiv.style.padding = '8px; margin-bottom: 5px; cursor: pointer; font-size: 13px;';
+        noteDiv.innerHTML = `<div style="display: flex; justify-content: space-between;">
+          <span>${note.title}</span>
+          <span style="font-size: 10px; color: var(--text-secondary);">${new Date(note.timestamp).toLocaleDateString()}</span>
+        </div>
+        <div style="margin-top: 5px;">
+          ${(note.tags || []).map(t => `<span style="font-size: 10px; background: hsla(260, 80%, 65%, 0.1); padding: 2px 5px; border-radius: 4px; margin-right: 4px;">#${t}</span>`).join('')}
+        </div>`;
+        noteDiv.onclick = () => {
+          loadNote(note.id);
+          document.getElementById('nav-home').click();
+        };
+        noteContainer.appendChild(noteDiv);
+      });
+      
+      libraryContent.appendChild(folderDiv);
+      libraryContent.appendChild(noteContainer);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  newFolderBtn.addEventListener('click', () => {
+    const name = prompt('Folder Name:');
+    if (name) {
+      const newFolder = { id: Date.now().toString(), name: name };
+      allFolders.push(newFolder);
+      saveState();
+      updateFolderDropdown();
+      renderLibrary();
+    }
   });
 
   // --- OpenAI Integration ---
@@ -188,5 +347,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Init load
-  loadNote();
+  loadAppState();
 });

@@ -14,6 +14,9 @@
     <div class="nav-icon active" id="nav-home" title="Notes">
        <i data-lucide="file-text"></i>
     </div>
+    <div class="nav-icon" id="nav-library" title="Library">
+       <i data-lucide="library"></i>
+    </div>
     <div class="nav-icon" id="nav-templates" title="AI Templates">
        <i data-lucide="layout"></i>
     </div>
@@ -35,6 +38,18 @@
     <div id="view-home" class="view">
       <h1>My Notes</h1>
       <div class="editor-container">
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+          <input type="text" id="note-title" class="glass-input" placeholder="Note Title" style="flex: 2;">
+          <select id="note-folder" class="glass-input" style="flex: 1;">
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 15px;">
+           <div style="display: flex; gap: 10px;">
+             <input type="text" id="note-tags" class="glass-input" placeholder="Tags (comma separated)">
+             <button id="ai-tag-btn" class="glass-button" style="padding: 5px 10px; font-size: 11px; white-space: nowrap;">✨ AI Tags</button>
+           </div>
+        </div>
         <textarea id="note-editor" class="glass-input" placeholder="Start typing... Use $...$ for LaTeX" rows="12"></textarea>
       </div>
       <div class="latex-preview glass-panel" id="latex-preview">
@@ -43,6 +58,16 @@
       <div style="display: flex; gap: 10px; margin-top: 10px;">
         <button id="save-note" class="glass-button">Save Note</button>
         <button id="summarize-note" class="glass-button" style="background: hsla(260, 85%, 68%, 0.2); border: 1px solid var(--accent-color);">AI Summarize</button>
+      </div>
+    </div>
+
+    <div id="view-library" class="view" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h1>Library</h1>
+        <button id="new-folder-btn" class="glass-button" style="padding: 5px 10px; font-size: 12px;">+ Folder</button>
+      </div>
+      <div id="library-content" class="glass-panel" style="padding: 10px; max-height: 400px; overflow-y: auto;">
+        <!-- Folder tree and notes list injected here -->
       </div>
     </div>
 
