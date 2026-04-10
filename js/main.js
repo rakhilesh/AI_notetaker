@@ -209,40 +209,50 @@ document.addEventListener('DOMContentLoaded', () => {
     libraryContent.innerHTML = '';
     
     allFolders.forEach(folder => {
-      const folderDiv = document.createElement('div');
-      folderDiv.innerHTML = `<div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-color); display: flex; align-items: center; gap: 5px;">
-        <i data-lucide="folder" style="width: 14px;"></i> ${folder.name}
-      </div>`;
+      const folderSection = document.createElement('div');
+      folderSection.className = 'folder-section';
+      folderSection.innerHTML = `<h2 style="font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="folder" style="width: 18px; color: var(--accent-color);"></i> ${folder.name}
+      </h2>`;
       
-      const noteContainer = document.createElement('div');
-      noteContainer.style.marginLeft = '15px';
-      noteContainer.style.marginBottom = '15px';
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+      grid.style.gap = '20px';
+      grid.style.marginBottom = '40px';
       
       const folderNotes = allNotes.filter(n => n.folderId === folder.id);
       if (folderNotes.length === 0) {
-        noteContainer.innerHTML = '<div style="font-size: 11px; color: var(--text-secondary);">Empty</div>';
+        grid.innerHTML = '<div style="font-size: 13px; color: var(--text-secondary); grid-column: 1/-1;">Empty folder</div>';
       }
       
       folderNotes.forEach(note => {
-        const noteDiv = document.createElement('div');
-        noteDiv.className = 'glass-panel';
-        noteDiv.style.padding = '8px; margin-bottom: 5px; cursor: pointer; font-size: 13px;';
-        noteDiv.innerHTML = `<div style="display: flex; justify-content: space-between;">
-          <span>${note.title}</span>
-          <span style="font-size: 10px; color: var(--text-secondary);">${new Date(note.timestamp).toLocaleDateString()}</span>
-        </div>
-        <div style="margin-top: 5px;">
-          ${(note.tags || []).map(t => `<span style="font-size: 10px; background: hsla(260, 80%, 65%, 0.1); padding: 2px 5px; border-radius: 4px; margin-right: 4px;">#${t}</span>`).join('')}
-        </div>`;
-        noteDiv.onclick = () => {
+        const noteCard = document.createElement('div');
+        noteCard.className = 'glass-panel';
+        noteCard.style.padding = '20px';
+        noteCard.style.cursor = 'pointer';
+        noteCard.style.transition = 'transform 0.2s';
+        
+        noteCard.innerHTML = `
+          <div style="font-weight: 700; font-size: 16px; margin-bottom: 10px;">${note.title}</div>
+          <div style="margin-bottom: 15px; color: var(--text-secondary); font-size: 13px;">${new Date(note.timestamp).toLocaleDateString()}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            ${(note.tags || []).map(t => `<span style="font-size: 11px; background: hsla(260, 80%, 65%, 0.1); color: var(--accent-color); padding: 4px 10px; border-radius: 20px; font-weight: 600;">#${t}</span>`).join('')}
+          </div>
+        `;
+        
+        noteCard.onmouseenter = () => noteCard.style.transform = 'translateY(-5px)';
+        noteCard.onmouseleave = () => noteCard.style.transform = 'translateY(0)';
+        
+        noteCard.onclick = () => {
           loadNote(note.id);
           document.getElementById('nav-home').click();
         };
-        noteContainer.appendChild(noteDiv);
+        grid.appendChild(noteCard);
       });
       
-      libraryContent.appendChild(folderDiv);
-      libraryContent.appendChild(noteContainer);
+      libraryContent.appendChild(folderSection);
+      libraryContent.appendChild(grid);
     });
 
     if (window.lucide) window.lucide.createIcons();
