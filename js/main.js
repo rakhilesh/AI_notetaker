@@ -18,9 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Constants ---
   const TEMPLATES = [
-    { title: "AI Research Note", content: "# AI Research: [Subject]\n\n## Objective\n\n## Key Findings\n- \n\n## LaTeX Proof\n$ $\n" },
-    { title: "Algorithm Design", content: "# Algorithm: [Name]\n\n## Problem Description\n\n## Logic Flow\n\n## Complexity Analysis\n$ O(n) $\n" },
-    { title: "Prompt Engineering Log", content: "# Prompt Log\n\n## Base Prompt\n\n## Variances\n\n## Best Iteration\n" }
+    { 
+      title: "🔬 AI Research Note", 
+      content: "# AI Research: [Subject]\n\n## Objective\nAnalyze [Mechanism/Algorithm]\n\n## Key Hypotheses\n$ H_0: ... $\n\n## Findings\n- Observation 1\n- Observation 2\n\n## Mathematical Proof\n$$\n\\nabla J(\\theta) = ...\n$$\n" 
+    },
+    { 
+      title: "🏗️ System Architecture", 
+      content: "# Architecture: [Component Name]\n\n## Overview\nHigh-level description of the system.\n\n## Data Flow\n[Input] -> [Model] -> [Output]\n\n## Scalability Constraints\n- Latency: $ < 100ms $\n- Throughput: $ 10k \\text{ req/s} $\n" 
+    },
+    { 
+      title: "✍️ Prompt Engineering Log", 
+      content: "# Prompt Engineering: [Task]\n\n## Base Prompt\n\"...\"\n\n## Variations & Results\n1. Version A: [Result]\n2. Version B: [Result]\n\n## Optimal Configuration\n- Temperature: 0.7\n- Top-P: 0.9\n" 
+    },
+    {
+      title: "📊 Model Evaluation",
+      content: "# Evaluation: [Model Name]\n\n## Metrics\n- Accuracy: $ 94.2\\% $\n- F1-Score: $ 0.91 $\n\n## Error Analysis\nCommon failure modes identified.\n"
+    }
   ];
 
   // --- State ---

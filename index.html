@@ -71,16 +71,26 @@
     </div>
 
     <div id="view-help" class="view" style="display: none;">
-      <h1>Help & Shortcuts</h1>
-      <div class="glass-panel" style="padding: 15px; font-size: 14px; line-height: 1.6;">
-        <p><strong>Shortcuts:</strong></p>
-        <ul style="margin-left: 20px; margin-bottom: 15px;">
-          <li><kbd>Cmd/Ctrl + Shift + L</kbd>: Store current tab link</li>
+      <h1>Glass AI Help Center</h1>
+      <div class="glass-panel" style="padding: 15px; font-size: 13px; line-height: 1.6; max-height: 300px; overflow-y: auto;">
+        <h2 style="font-size: 15px; color: var(--accent-color); margin-bottom: 5px;">⌨️ Keyboard Shortcuts</h2>
+        <ul style="margin-left: 20px; margin-bottom: 15px; color: var(--text-secondary);">
+          <li><kbd>Cmd/Ctrl + Shift + L</kbd>: Auto-store current page link.</li>
+          <li>The extension badge will glow purple briefly to confirm storage.</li>
         </ul>
-        <p><strong>LaTeX:</strong></p>
-        <p>Use <code>$ E=mc^2 $</code> for inline and <code>$$ ... $$</code> for blocks.</p>
-        <p><strong>AI Templates:</strong></p>
-        <p>Select specialized templates for AI research and design docs.</p>
+
+        <h2 style="font-size: 15px; color: var(--accent-color); margin-bottom: 5px;">📐 LaTeX Support</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 10px;">Render beautiful math equations in real-time:</p>
+        <ul style="margin-left: 20px; margin-bottom: 15px; color: var(--text-secondary);">
+          <li><strong>Inline:</strong> Wrap in single dollar signs: <code>$E=mc^2$</code></li>
+          <li><strong>Block:</strong> Wrap in double dollar signs: <code>$$\int_a^b f(x)dx$$</code></li>
+        </ul>
+
+        <h2 style="font-size: 15px; color: var(--accent-color); margin-bottom: 5px;">🤖 AI Assistant</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 10px;">Use the 'AI Summarize' button to condense your notes using OpenAI. You must provide an API key in the <strong>Settings</strong> tab.</p>
+
+        <h2 style="font-size: 15px; color: var(--accent-color); margin-bottom: 5px;">📁 Templates</h2>
+        <p style="color: var(--text-secondary);">Access pre-built AI project templates to structure your thoughts quickly. Perfect for research and engineering logs.</p>
       </div>
     </div>
   </div>
